@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project version="2.0.0a12" title="">
+  <file path="mcquery.class.php" hash="557b536578119af3cc7ea8f9fa6643d6" package="Fremnet\Minecraft">
+    <docblock line="2">
+      <description>Minecraft Query Class - PHP5 method of querying Minecraft servers
+Copyright (C) 2013 Shannon Wynter</description>
+      <long-description>&lt;p&gt;This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.&lt;/p&gt;
+
+&lt;p&gt;This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.&lt;/p&gt;
+
+&lt;p&gt;You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.&lt;/p&gt;
+
+&lt;h2&gt;Changelog&lt;/h2&gt;
+
+&lt;p&gt;version 1.0, 2013-02-18, Shannon Wynter {@link http://fremnet.net/contact}
+- initial release&lt;/p&gt;</long-description>
+      <tag line="2" name="version" description="1.0"/>
+      <tag line="2" name="author" description="Shannon Wynter {@link http://fremnet.net/contact}"/>
+      <tag line="2" name="copyright" description="Copyright &amp;copy; 2013 Shannon Wynter (Fremnet)"/>
+      <tag line="2" name="license" description="http://www.gnu.org/licenses/gpl-2.0.html GPL 2.0 or greater"/>
+      <tag line="2" name="package" description="Fremnet"/>
+      <tag line="2" name="subpackage" description="Minecraft"/>
+    </docblock>
+    <class final="false" abstract="false" namespace="global" line="53" package="Fremnet\Minecraft">
+      <extends/>
+      <name>MCQuery</name>
+      <full_name>\MCQuery</full_name>
+      <docblock line="33">
+        <description>Minecraft Query Class</description>
+        <long-description>&lt;p&gt;&lt;b&gt;Synopsis:&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;i&gt;General Usage:&lt;/i&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;include('mcquery.class.php');
+$q = new MCQuery('121.45.193.22');
+$q-&gt;connect();
+print_r($q-&gt;basic_status());
+&lt;/code&gt;&lt;/pre&gt;</long-description>
+        <tag line="33" name="version" description="1.0.0"/>
+        <tag line="33" name="author" description="Shannon Wynter (http://fremnet.net/contact)"/>
+        <tag line="33" name="copyright" description="Copyright (c) 2013, Shannon Wynter (Fremnet)"/>
+        <tag line="33" name="license" description="http://www.gnu.org/licenses/gpl-2.0.html GPL 2.0 or greater"/>
+        <tag line="33" name="package" description="Fremnet"/>
+        <tag line="33" name="subpackage" description="Minecraft"/>
+      </docblock>
+      <constant namespace="global" line="60" package="Fremnet\Minecraft">
+        <name>PACKET_TYPE_STATUS</name>
+        <full_name>PACKET_TYPE_STATUS</full_name>
+        <value>0</value>
+        <docblock line="57">
+          <description>Status packet</description>
+          <long-description></long-description>
+        </docblock>
+      </constant>
+      <constant namespace="global" line="64" package="Fremnet\Minecraft">
+        <name>PACKET_TYPE_CHALLENGE</name>
+        <full_name>PACKET_TYPE_CHALLENGE</full_name>
+        <value>9</value>
+        <docblock line="61">
+          <description>Challenge packet</description>
+          <long-description></long-description>
+        </docblock>
+      </constant>
+      <property final="false" static="false" visibility="private" line="70" namespace="global" package="Default">
+        <name>$retries</name>
+        <default>0</default>
+        <docblock line="67">
+          <description>Internal handshake retry counter</description>
+          <long-description></long-description>
+        </docblock>
+      </property>
+      <property final="false" static="false" visibility="private" line="74" namespace="global" package="Default">
+        <name>$max_retries</name>
+        <default>3</default>
+        <docblock line="71">
+          <description>Maximum attempts at retrying</description>
+          <long-description></long-description>
+        </docblock>
+      </property>
+      <property final="false" static="false" visibility="private" line="79" namespace="global" package="Default">
+        <name>$read_timeout</name>
+        <default>2</default>
+        <docblock line="76">
+          <description>How long to wait for UDP packets to become available</description>
+          <long-description></long-description>
+        </docblock>
+      </property>
+      <property final="false" static="false" visibility="private" line="84" namespace="global" package="Default">
+        <name>$id</name>
+        <default>0</default>
+        <docblock line="81">
+          <description>Current packet ID, not really used by this class, more to be polite to the server</description>
+          <long-description></long-description>
+        </docblock>
+      </property>
+      <property final="false" static="false" visibility="private" line="88" namespace="global" package="Default">
+        <name>$challenge</name>
+        <default></default>
+        <docblock line="85">
+          <description>Storage for the classic protocol challange</description>
+          <long-description></long-description>
+        </docblock>
+      </property>
+      <property final="false" static="false" visibility="private" line="90" namespace="global" package="Default">
+        <name>$host</name>
+        <default></default>
+      </property>
+      <property final="false" static="false" visibility="private" line="91" namespace="global" package="Default">
+        <name>$prot</name>
+        <default>25565</default>
+      </property>
+      <property final="false" static="false" visibility="private" line="93" namespace="global" package="Default">
+        <name>$socket</name>
+        <default></default>
+      </property>
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="103" package="Fremnet\Minecraft">
+        <name>__construct</name>
+        <full_name>__construct</full_name>
+        <docblock line="95">
+          <description>Construct</description>
+          <long-description></long-description>
+          <tag line="95" name="param" description="the host to connect to" type="string" variable="$host">
+            <type by_reference="false">string</type>
+          </tag>
+          <tag line="95" name="param" description="set to null to take the default of 25565" type="integer" variable="$port">
+            <type by_reference="false">integer</type>
+          </tag>
+          <tag line="95" name="param" description="set to null to take the default of 3 retries" type="integer" variable="$max_retries">
+            <type by_reference="false">integer</type>
+          </tag>
+          <tag line="95" name="param" description="set to null to take the default read timeout of 2 seconds" type="integer" variable="$read_timeout">
+            <type by_reference="false">integer</type>
+          </tag>
+        </docblock>
+        <argument line="103">
+          <name>$host</name>
+          <default></default>
+          <type/>
+        </argument>
+        <argument line="103">
+          <name>$port</name>
+          <default>null</default>
+          <type/>
+        </argument>
+        <argument line="103">
+          <name>$max_retries</name>
+          <default>null</default>
+          <type/>
+        </argument>
+        <argument line="103">
+          <name>$read_timeout</name>
+          <default>null</default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="121" package="Fremnet\Minecraft">
+        <name>connect</name>
+        <full_name>connect</full_name>
+        <docblock line="114">
+          <description>Connect</description>
+          <long-description>&lt;p&gt;'Connect' the udp socket and initiate handshake&lt;/p&gt;</long-description>
+          <tag line="114" name="throws" description="" type="\Exception">
+            <type by_reference="false">\Exception</type>
+          </tag>
+        </docblock>
+      </method>
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="140" package="Fremnet\Minecraft">
+        <name>disconnect</name>
+        <full_name>disconnect</full_name>
+        <docblock line="133">
+          <description>Disconnect</description>
+          <long-description>&lt;p&gt;Disconnect the udp socket (is it ever really connected?)&lt;/p&gt;</long-description>
+          <tag line="133" name="throws" description="" type="\MCNotConnectedException">
+            <type by_reference="false">\MCNotConnectedException</type>
+          </tag>
+        </docblock>
+      </method>
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="155" package="Fremnet\Minecraft">
+        <name>handshake</name>
+        <full_name>handshake</full_name>
+        <docblock line="147">
+          <description>Handshake</description>
+          <long-description>&lt;p&gt;Perform the MCQuery protocol handshake described on dinnerbone's website&lt;/p&gt;</long-description>
+          <tag line="147" name="see" description="\http://dinnerbone.com/blog/2011/10/14/minecraft-19-has-rcon-and-query/" refers="\http://dinnerbone.com/blog/2011/10/14/minecraft-19-has-rcon-and-query/"/>
+          <tag line="147" name="throws" description="" type="\MCNotConnectedException">
+            <type by_reference="false">\MCNotConnectedException</type>
+          </tag>
+        </docblock>
+      </method>
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="196" package="Fremnet\Minecraft">
+        <name>basic_status</name>
+        <full_name>basic_status</full_name>
+        <docblock line="176">
+          <description>Basic Status</description>
+          <long-description>&lt;p&gt;Retrieve basic server status&lt;/p&gt;
+
+&lt;p&gt;Example output
+Array (
+    [motd]       =&gt; A Minecraft Server
+    [gametype]   =&gt; SMP
+    [map]        =&gt; world
+    [numplayers] =&gt; 2
+    [maxplayers] =&gt; 20
+    [hostname]   =&gt; 127.0.0.1
+    [port]       =&gt; 25565
+)&lt;/p&gt;</long-description>
+          <tag line="176" name="throws" description="" type="\MCNotConnectedException">
+            <type by_reference="false">\MCNotConnectedException</type>
+          </tag>
+          <tag line="176" name="throws" description="" type="\MCNoChallengeException">
+            <type by_reference="false">\MCNoChallengeException</type>
+          </tag>
+          <tag line="176" name="returns" description="array associative array of name =&gt; value"/>
+        </docblock>
+      </method>
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="251" package="Fremnet\Minecraft">
+        <name>full_status</name>
+        <full_name>full_status</full_name>
+        <docblock line="224">
+          <description>Full status</description>
+          <long-description>&lt;p&gt;Retrieve the full server status including player list&lt;/p&gt;
+
+&lt;p&gt;Example output
+Array (
+    [motd] =&gt; A Minecraft Server
+    [gametype] =&gt; SMP
+    [game_id] =&gt; MINECRAFT
+    [version] =&gt; 1.4.7
+    [plugins] =&gt;
+    [map] =&gt; world
+    [numplayers] =&gt; 2
+    [maxplayers] =&gt; 20
+    [hostport] =&gt; 25565
+    [hostip] =&gt; 127.0.0.1
+    [players] =&gt; Array (
+        [0] =&gt; fredblogs
+        [1] =&gt; maryblogs
+    )
+)&lt;/p&gt;</long-description>
+          <tag line="224" name="throws" description="" type="\MCNotConnectedException">
+            <type by_reference="false">\MCNotConnectedException</type>
+          </tag>
+          <tag line="224" name="throws" description="" type="\MCNoChallengeException">
+            <type by_reference="false">\MCNoChallengeException</type>
+          </tag>
+          <tag line="224" name="return" description="associative array of server data" type="array">
+            <type by_reference="false">array</type>
+          </tag>
+        </docblock>
+      </method>
+      <method final="false" abstract="false" static="false" visibility="protected" namespace="global" line="288" package="Fremnet\Minecraft">
+        <name>array_mutate</name>
+        <full_name>array_mutate</full_name>
+        <docblock line="276">
+          <description>Array Mutate</description>
+          <long-description>&lt;p&gt;Quickly convert any given array of name, value into an
+associative array of name =&gt; value.&lt;/p&gt;
+
+&lt;p&gt;NB: Not really sutable for large arrays.&lt;/p&gt;</long-description>
+          <tag line="276" name="throws" description="" type="\LengthException">
+            <type by_reference="false">\LengthException</type>
+          </tag>
+          <tag line="276" name="param" description="even [name, value] array" type="array" variable="$array">
+            <type by_reference="false">array</type>
+          </tag>
+          <tag line="276" name="return" description="associative array of [name =&gt; value]" type="array">
+            <type by_reference="false">array</type>
+          </tag>
+        </docblock>
+        <argument line="288">
+          <name>$array</name>
+          <default></default>
+          <type>array</type>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="false" visibility="protected" namespace="global" line="311" package="Fremnet\Minecraft">
+        <name>write_packet</name>
+        <full_name>write_packet</full_name>
+        <docblock line="301">
+          <description>Write packet</description>
+          <long-description>&lt;p&gt;Send a MCQuery packet to the server&lt;/p&gt;
+
+&lt;p&gt;$type would be PACKET_TYPE_STATUS or PACKET_TYPE_CHALLENGE&lt;/p&gt;</long-description>
+          <tag line="301" name="param" description="type of packet to send" type="integer" variable="$type">
+            <type by_reference="false">integer</type>
+          </tag>
+          <tag line="301" name="param" description="usually a string to send as a payload" type="mixed" variable="$payload">
+            <type by_reference="false">mixed</type>
+          </tag>
+        </docblock>
+        <argument line="311">
+          <name>$type</name>
+          <default></default>
+          <type/>
+        </argument>
+        <argument line="311">
+          <name>$payload</name>
+          <default></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="false" visibility="protected" namespace="global" line="326" package="Fremnet\Minecraft">
+        <name>read_packet</name>
+        <full_name>read_packet</full_name>
+        <docblock line="316">
+          <description>Read Packet</description>
+          <long-description>&lt;p&gt;Really when hooked up to smart udp read it's going to read as much as
+it can, not just one packet.&lt;/p&gt;
+
+&lt;p&gt;Read and unpack the basic information from a MCQuery packet&lt;/p&gt;</long-description>
+          <tag line="316" name="return" description="Type of packet, Id of packet, Buffer" type="array">
+            <type by_reference="false">array</type>
+          </tag>
+        </docblock>
+      </method>
+      <method final="false" abstract="false" static="false" visibility="protected" namespace="global" line="342" package="Fremnet\Minecraft">
+        <name>smart_udp_read</name>
+        <full_name>smart_udp_read</full_name>
+        <docblock line="332">
+          <description>Smart UDP Read</description>
+          <long-description>&lt;p&gt;Face it, when it comes to reading UDP packets, PHP is rather dumb
+This gives us a slightly smarter udp read that waits for the socket to be unblocked
+and keeps reading until there's no more waiting data.&lt;/p&gt;</long-description>
+          <tag line="332" name="throws" description="" type="\MCNotConnectedException">
+            <type by_reference="false">\MCNotConnectedException</type>
+          </tag>
+          <tag line="332" name="return" description="" type="string">
+            <type by_reference="false">string</type>
+          </tag>
+        </docblock>
+      </method>
+    </class>
+    <class final="false" abstract="false" namespace="global" line="369" package="Default">
+      <extends>\Exception</extends>
+      <name>MCException</name>
+      <full_name>\MCException</full_name>
+    </class>
+    <class final="false" abstract="false" namespace="global" line="370" package="Default">
+      <extends>\MCException</extends>
+      <name>MCNotConnectedException</name>
+      <full_name>\MCNotConnectedException</full_name>
+    </class>
+    <class final="false" abstract="false" namespace="global" line="371" package="Default">
+      <extends>\MCException</extends>
+      <name>MCNoChallengeException</name>
+      <full_name>\MCNoChallengeException</full_name>
+    </class>
+    <parse_markers>
+      <error line="90" code="50018">No DocBlock was found for property $host</error>
+      <error line="91" code="50018">No DocBlock was found for property $prot</error>
+      <error line="93" code="50018">No DocBlock was found for property $socket</error>
+      <error line="369" code="50000">No DocBlock was found for \MCException</error>
+      <error line="370" code="50000">No DocBlock was found for \MCNotConnectedException</error>
+      <error line="371" code="50000">No DocBlock was found for \MCNoChallengeException</error>
+    </parse_markers>
+  </file>
+  <package name="Default" full_name="Default"/>
+  <package name="Fremnet" full_name="Fremnet">
+    <package name="Minecraft" full_name="Fremnet\Minecraft"/>
+  </package>
+  <namespace name="global" full_name="global"/>
+  <marker count="0">todo</marker>
+  <marker count="0">fixme</marker>
+  <deprecated count="0"/>
+</project>
