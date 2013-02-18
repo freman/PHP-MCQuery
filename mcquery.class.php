@@ -88,7 +88,7 @@ class MCQuery {
 	private $challenge;
 
 	private $host;
-	private $prot = 25565;
+	private $port = 25565;
 
 	private $socket;
 
